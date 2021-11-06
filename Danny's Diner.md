@@ -1,9 +1,9 @@
-### Context
+## Context
 Danny seriously loves Japanese food so in the beginning of 2021, he decides to embark upon a risky venture and opens up a cute little restaurant that sells his 3 favourite foods: sushi, curry and ramen.
 
 Danny’s Diner is in need of assistance to help the restaurant stay afloat - the restaurant has captured some very basic data from their few months of operation but have no idea how to use their data to help them run the business.
 
-### Problem Statement
+## Problem Statement
 Danny wants to use the data to answer a few simple questions about his customers, especially about their visiting patterns, how much money they’ve spent and also which menu items are their favourite. Having this deeper connection with his customers will help him deliver a better and more personalised experience for his loyal customers.
 
 He plans on using these insights to help him decide whether he should expand the existing customer loyalty program - additionally he needs help to generate some basic datasets so his team can easily inspect the data without needing to use SQL.
@@ -16,7 +16,7 @@ Danny has shared 3 key datasets for this case study:
 * members
 
 
-#### What is the total amount each customer spent at the restaurant?
+### What is the total amount each customer spent at the restaurant?
 
 ``` sql
 SELECT
@@ -38,7 +38,7 @@ ORDER BY
 |B           |74          |
 |C           |36          |
 
-#### What was the first item(s) from the menu purchased by each customer?
+### What was the first item(s) from the menu purchased by each customer?
 
 ``` sql
 WITH product_sales AS (
@@ -71,7 +71,7 @@ WHERE
 |B           |curry        |
 |C           |ramen        |
 
-#### What is the most purchased item on the menu and how many times was it purchased by all customers?
+### What is the most purchased item on the menu and how many times was it purchased by all customers?
 
 ``` sql
 SELECT
@@ -134,7 +134,7 @@ ORDER BY
 |B           |ramen        |2              |
 |C           |ramen        |3              |
 
-#### Which item was purchased first by the customer after they became a member and what date was it? (including the date they joined)
+### Which item was purchased first by the customer after they became a member and what date was it? (including the date they joined)
 
 ``` sql
 WITH customer_purchases AS (
@@ -173,7 +173,7 @@ ORDER BY
 |A           |2021-01-07    |curry        |
 |B           |2021-01-11    |sushi        |
 
-#### Which menu item(s) was purchased just before the customer became a member and when?
+### Which menu item(s) was purchased just before the customer became a member and when?
 
 ``` sql
 WITH customer_purchases AS(
@@ -213,7 +213,7 @@ ORDER BY
 |A           |2021-01-01    |sushi        |
 |B           |2021-01-04    |sushi        |
 
-#### What is the number of unique menu items and total amount spent for each member before they became a member?
+### What is the number of unique menu items and total amount spent for each member before they became a member?
 
 ``` sql
 SELECT
@@ -263,7 +263,7 @@ ORDER BY
 |A           |860   |
 |C           |360   |
 
-#### In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+### In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 
 ``` sql
 SELECT

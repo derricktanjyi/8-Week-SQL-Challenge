@@ -30,6 +30,7 @@ GROUP BY
 ORDER BY
   s.customer_id;
 ```
+#### Result:
 
 |customer\_id|total\_sales|
 |------------|------------|
@@ -61,6 +62,8 @@ FROM
 WHERE
   order_rank = 1;
 ```
+#### Result:
+
 |customer\_id|product\_name|
 |------------|-------------|
 |A           |curry        |
@@ -84,6 +87,8 @@ ORDER BY
 LIMIT
   1;
 ```
+#### Result:
+
 |product\_name|total\_purchases|
 |-------------|----------------|
 |ramen        |8               |
@@ -119,6 +124,7 @@ WHERE
 ORDER BY
   customer_id ASC;
 ```
+#### Result:
 
 |customer\_id|product\_name|order\_quantity|
 |------------|-------------|---------------|
@@ -160,6 +166,8 @@ WHERE
 ORDER BY
   customer_id;
 ```
+#### Result:
+
 |customer\_id|order\_date   |product\_name|
 |------------|--------------|-------------|
 |A           |2021-01-07    |curry        |
@@ -197,6 +205,8 @@ ORDER BY
   customer_id,
   product_name;
 ```
+#### Result:
+
 |customer\_id|order\_date   |product\_name|
 |------------|--------------|-------------|
 |A           |2021-01-01    |curry        |
@@ -219,6 +229,8 @@ WHERE
 GROUP BY
   s.customer_id;
 ```
+#### Result:
+
 |customer\_id|unique\_menu\_items|total\_spend|
 |------------|-------------------|------------|
 |A           |2                  |25          |
@@ -243,6 +255,8 @@ GROUP BY
 ORDER BY
   points DESC;
 ```
+#### Result:
+
 |customer\_id|points|
 |------------|------|
 |B           |940   |
@@ -269,6 +283,8 @@ GROUP BY
 ORDER BY
   points DESC;
 ```
+#### Result:
+
 |customer\_id|points|
 |------------|------|
 |A           |1020  |

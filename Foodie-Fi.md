@@ -23,6 +23,7 @@ ORDER BY
   customer_id,
   start_date;
 ```
+#### Result:
 
 | customer\_id | plan\_id | plan\_name    | start\_date| price  |
 | ------------ | -------- | ------------- | ---------- | ------ |
@@ -57,6 +58,7 @@ SELECT
 FROM
   foodie_fi.subscriptions;
 ```
+#### Result:
 
 | customer\_count |
 | --------------- |
@@ -77,6 +79,8 @@ GROUP BY
 ORDER BY
   month_start;
 ```
+#### Result:
+
 | month\_start | trial\_customers |
 | ------------ | ---------------- |
 | 2020-01-01   | 88               |
@@ -110,6 +114,8 @@ GROUP BY
 ORDER BY
   s.plan_id;
 ```
+#### Result:
+
 | plan\_id | plan\_name    | events |
 | -------- | ------------- | ------ |
 | 1        | basic monthly | 8      |
@@ -139,6 +145,8 @@ SELECT
 FROM
   foodie_fi.subscriptions;
 ```
+#### Result:
+
 | churn\_customers | percentage |
 | ---------------- | ---------- |
 | 307              | 30.0       |
@@ -179,6 +187,8 @@ FROM
 WHERE
   plan_rank = 2
 ```
+#### Result:
+
 | churn\_customers | percentage |
 | ---------------- | ---------- |
 | 92               | 9.0        |
@@ -213,6 +223,8 @@ GROUP BY
 ORDER BY
   p.plan_id
 ```
+#### Result:
+
 | plan\_id | plan\_name    | customer\_count | percentage |
 | -------- | ------------- | --------------- | ---------- |
 | 1        | basic monthly | 125             | 13         |
@@ -262,6 +274,8 @@ GROUP BY
 ORDER BY
   p.plan_id;
 ```
+#### Result:
+
 | plan\_id | plan\_name    | customers | percentage |
 | -------- | ------------- | --------- | ---------- |
 | 0        | trial         | 1000      | 40.8       |
@@ -281,6 +295,8 @@ WHERE
   AND start_date BETWEEN '2020-01-01'
   AND '2020-12-31';
 ```
+#### Result:
+
 | customers\_upgrade\_annual |
 | -------------------------- |
 | 195                        |
@@ -316,6 +332,8 @@ FROM
   annual_plan
   CROSS JOIN trial_plan;
 ```
+#### Result:
+
 | avg\_days        |
 | ---------------- |
 | 95.0566821705426 |
@@ -386,6 +404,8 @@ ORDER BY
   breakdown_period,
   customers DESC;
 ```
+#### Result:
+
 | breakdown\_period | customers |
 | ----------------- | --------- |
 | 0 - 30 days       | 48        |

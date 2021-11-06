@@ -8,8 +8,8 @@ Danny wants to use the data to answer a few simple questions about his customers
 
 He plans on using these insights to help him decide whether he should expand the existing customer loyalty program - additionally he needs help to generate some basic datasets so his team can easily inspect the data without needing to use SQL.
 
-### Example Datasets
-Danny has shared 3 key datasets for this case study:
+## Example Datasets
+The 3 key datasets for this case study:
 
 * sales
 * menu
@@ -93,7 +93,7 @@ LIMIT
 |-------------|----------------|
 |ramen        |8               |
 
-#### Which item(s) was the most popular for each customer?
+### Which item(s) was the most popular for each customer?
 
 ``` sql
 WITH customer_orders AS (

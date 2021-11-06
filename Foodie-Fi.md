@@ -1,12 +1,14 @@
-### Subscription based businesses are super popular and Danny realised that there was a large gap in the market - he wanted to create a new streaming service that only had food related content - something like Netflix but with only cooking shows!
+## Context 
+Subscription based businesses are super popular and Danny realised that there was a large gap in the market - he wanted to create a new streaming service that only had food related content - something like Netflix but with only cooking shows!
 
-### Danny finds a few smart friends to launch his new startup Foodie-Fi in 2020 and started selling monthly and annual subscriptions, giving their customers unlimited on-demand access to exclusive food videos from around the world!
+## Problem
+Danny finds a few smart friends to launch his new startup Foodie-Fi in 2020 and started selling monthly and annual subscriptions, giving their customers unlimited on-demand access to exclusive food videos from around the world!
 
-### Danny created Foodie-Fi with a data driven mindset and wanted to ensure all future investment decisions and new features were decided using data. This case study focuses on using subscription style digital data to answer important business questions.
+Danny created Foodie-Fi with a data driven mindset and wanted to ensure all future investment decisions and new features were decided using data. This case study focuses on using subscription style digital data to answer important business questions.
 
 ### This case study is split into an initial data understanding question and thereafter data analysis questions.
 
-#### Part A. Based off the 8 sample customers provided in the sample from the `subscriptions` table, write a brief description about each customer’s onboarding journey.
+### Part A. Based off the 8 sample customers provided in the sample from the `subscriptions` table, write a brief description about each customer’s onboarding journey.
 
 ```sql 
 SELECT
@@ -50,7 +52,7 @@ ORDER BY
 
 ### Part B: Data Analysis Questions
 
-#### How many customers has Foodie-Fi ever had?
+### How many customers has Foodie-Fi ever had?
 
 ```sql
 SELECT
@@ -64,7 +66,7 @@ FROM
 | --------------- |
 | 1000            |
 
-#### What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
+### What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
 
 ```sql
 SELECT
@@ -96,7 +98,7 @@ ORDER BY
 | 2020-11-01   | 75               |
 | 2020-12-01   | 84               |
 
-#### What plan `start_date` values occur after the year 2020 for our dataset? Show the breakdown by count of events for each `plan_name`
+### What plan `start_date` values occur after the year 2020 for our dataset? Show the breakdown by count of events for each `plan_name`
 
 ```sql
 SELECT
@@ -123,7 +125,7 @@ ORDER BY
 | 3        | pro annual    | 63     |
 | 4        | churn         | 71     |
 
-#### What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
+### What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
 
 ```sql
 SELECT
@@ -151,7 +153,7 @@ FROM
 | ---------------- | ---------- |
 | 307              | 30.0       |
 
-#### How many customers have churned straight after their initial free trial - what percentage is this rounded to 1 decimal place?
+### How many customers have churned straight after their initial free trial - what percentage is this rounded to 1 decimal place?
 
 ```sql
 WITH ranked_plans AS (
@@ -193,7 +195,7 @@ WHERE
 | ---------------- | ---------- |
 | 92               | 9.0        |
 
-#### What is the number and percentage of customer plans after their initial free trial?
+### What is the number and percentage of customer plans after their initial free trial?
 ```sql
 WITH ranked_plans AS(
   SELECT
@@ -232,7 +234,7 @@ ORDER BY
 | 3        | pro annual    | 252             | 25         |
 | 4        | churn         | 307             | 31         |
 
-#### What is the customer count and percentage breakdown of all 5 `plan_name` values at `2020-12-31`?
+### What is the customer count and percentage breakdown of all 5 `plan_name` values at `2020-12-31`?
 
 ```sql
 WITH valid_subscriptions AS (
@@ -284,7 +286,7 @@ ORDER BY
 | 3        | pro annual    | 195       | 8.0        |
 | 4        | churn         | 236       | 9.6        |
 
-#### How many customers have upgraded to an annual plan in 2020?
+### How many customers have upgraded to an annual plan in 2020?
 ```sql
 SELECT
   COUNT(DISTINCT customer_id) AS customers_upgrade_annual
@@ -301,7 +303,7 @@ WHERE
 | -------------------------- |
 | 195                        |
 
-#### How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
+### How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 ```sql
 WITH annual_plan AS (
   SELECT
@@ -338,7 +340,7 @@ FROM
 | ---------------- |
 | 95.0566821705426 |
 
-#### Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
+### Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 ```sql
 WITH annual_plan AS (
   SELECT

@@ -8,3 +8,5 @@ Title of Challenge Topics completed
 3. Foodie-Fi
 4. Data Bank
 5. Data Mart
+6. Clique Bait
+7. Balanced Tree

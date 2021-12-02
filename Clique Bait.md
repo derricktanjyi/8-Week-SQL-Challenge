@@ -253,4 +253,326 @@ ORDER BY
 |9          |Oyster        |726      |
 
 
+### Product Funnel Analysis
 
+#### Using a single SQL query - create a new output table which has the following details:
+* How many times was each product viewed?
+* How many times was each product added to cart?
+* How many times was each product added to a cart but not purchased (abandoned)?
+* How many times was each product purchased?
+
+```sql
+DROP TABLE IF EXISTS product_info;
+CREATE TEMP TABLE product_info AS WITH cte_product_page_events AS ( --Creating The Table
+  SELECT
+    events.visit_id,
+    page_hierarchy.product_id,
+    page_hierarchy.page_name,
+    page_hierarchy.product_category,
+    SUM(
+      CASE
+        WHEN event_type = 1 THEN 1
+        ELSE 0
+      END
+    ) AS page_view,
+    SUM(
+      CASE
+        WHEN event_type = 2 THEN 1
+        ELSE 0
+      END
+    ) AS cart_add
+  FROM
+    clique_bait.events
+    INNER JOIN clique_bait.page_hierarchy ON events.page_id = page_hierarchy.page_id
+  WHERE
+    page_hierarchy.product_id IS NOT NULL
+  GROUP BY
+    events.visit_id,
+    page_hierarchy.product_id,
+    page_hierarchy.page_name,
+    page_hierarchy.product_category
+),
+cte_visit_purchase AS (
+  SELECT
+    DISTINCT visit_id
+  FROM
+    clique_bait.events
+  WHERE
+    event_type = 3 -- purchase event
+),
+cte_combined_product_events AS (
+  SELECT
+    t1.visit_id,
+    t1.product_id,
+    t1.page_name,
+    t1.product_category,
+    t1.page_view,
+    t1.cart_add,
+    CASE
+      WHEN t2.visit_id IS NULL THEN 0
+      ELSE 1
+    END as purchase
+  FROM
+    cte_product_page_events AS t1
+    LEFT JOIN cte_visit_purchase AS t2 ON t1.visit_id = t2.visit_id
+)
+SELECT --Showing the Table
+  product_id,
+  page_name AS product,
+  product_category,
+  SUM(page_view) AS page_views,
+  SUM(cart_add) AS cart_adds,
+  SUM(
+    CASE
+      WHEN cart_add = 1
+      AND purchase = 0 THEN 1
+      ELSE 0
+    END
+  ) AS abandoned,
+  SUM(
+    CASE
+      WHEN cart_add = 1
+      AND purchase = 1 THEN 1
+      ELSE 0
+    END
+  ) AS purchases
+FROM
+  cte_combined_product_events
+GROUP BY
+  product_id,
+  product_category,
+  product;
+SELECT
+  *
+FROM
+  product_info
+ORDER BY
+  product_id;
+```
+
+| product\_id | product        | product\_category | page\_views | cart\_adds | abandoned | purchases |
+| ----------- | -------------- | ----------------- | ----------- | ---------- | --------- | --------- |
+| 1           | Salmon         | Fish              | 1559        | 938        | 227       | 711       |
+| 2           | Kingfish       | Fish              | 1559        | 920        | 213       | 707       |
+| 3           | Tuna           | Fish              | 1515        | 931        | 234       | 697       |
+| 4           | Russian Caviar | Luxury            | 1563        | 946        | 249       | 697       |
+| 5           | Black Truffle  | Luxury            | 1469        | 924        | 217       | 707       |
+| 6           | Abalone        | Shellfish         | 1525        | 932        | 233       | 699       |
+| 7           | Lobster        | Shellfish         | 1547        | 968        | 214       | 754       |
+| 8           | Crab           | Shellfish         | 1564        | 949        | 230       | 719       |
+| 9           | Oyster         | Shellfish         | 1568        | 943        | 217       | 726       |
+
+
+#### Additionally, create another table which further aggregates the data for the above points but this time for each product category instead of individual products.
+
+```sql
+DROP TABLE IF EXISTS product_category_info;
+CREATE TEMP TABLE product_category_info AS
+SELECT
+  product_category,
+  SUM(page_views) AS page_views,
+  SUM(cart_adds) AS cart_adds,
+  SUM(abandoned) AS abandoned,
+  SUM(purchases) AS purchases
+FROM
+  product_info
+GROUP BY
+  product_category;
+SELECT
+  *
+FROM
+  product_info
+ORDER BY
+  product_id;
+SELECT
+  *
+FROM
+  product_category_info
+ORDER BY
+  product_category;
+```
+| product\_category | page\_views | cart\_adds | abandoned | purchases |
+| ----------------- | ----------- | ---------- | --------- | --------- |
+| Fish              | 4633        | 2789       | 674       | 2115      |
+| Luxury            | 3032        | 1870       | 466       | 1404      |
+| Shellfish         | 6204        | 3792       | 894       | 2898      |
+
+#### Q1. Which Product had the most views, cart adds and purchases?
+```sql
+-- Most Views
+SELECT
+  *
+FROM
+  product_info
+ORDER BY
+  page_views DESC
+LIMIT
+  1;
+-- Most Cart Adds
+SELECT
+  *
+FROM
+  product_info
+ORDER BY
+  cart_adds DESC
+LIMIT
+  1;
+-- Most Purchases
+SELECT
+  *
+FROM
+  product_info
+ORDER BY
+  purchases DESC
+LIMIT
+  1;
+```
+#### Most Views
+|product\_id|product|product\_category|page\_views|cart\_adds|abandoned|purchases|
+|-----------|-------|-----------------|-----------|----------|---------|---------|
+|9          |Oyster |Shellfish        |1568       |943       |217      |726      |
+
+#### Most Cart Adds
+|product\_id|product|product\_category|page\_views|cart\_adds|abandoned|purchases|
+|-----------|-------|-----------------|-----------|----------|---------|---------|
+|7          |Lobster|Shellfish        |1547       |968       |214      |754      |
+
+#### Most Purchases
+|product\_id|product|product\_category|page\_views|cart\_adds|abandoned|purchases|
+|-----------|-------|-----------------|-----------|----------|---------|---------|
+|7          |Lobster|Shellfish        |1547       |968       |214      |754      |
+
+#### Q2. Which product was most likely to be abandoned?
+```sql
+SELECT
+  product,
+  ROUND((abandoned / cart_adds), 2) AS abandoned_likelihood
+FROM
+  product_info
+ORDER BY
+  abandoned_likelihood DESC
+LIMIT
+  1;
+```
+|product       |abandoned\_likelihood|
+|--------------|---------------------|
+|Russian Caviar|0.26                 |
+
+#### Q3. Which product had the highest view to purchase percentage?
+```sql
+SELECT
+  product,
+  ROUND((100 * purchases / page_views), 2) AS view_purchase_percentage
+FROM
+  product_info
+ORDER BY
+  view_purchase_percentage DESC
+LIMIT
+  1
+```
+|product|view\_purchase\_percentage|
+|-------|--------------------------|
+|Lobster|48.74                     |
+
+#### Q4. What is the average conversion rate from view to cart add?
+```sql
+SELECT
+  ROUND(AVG((100 * cart_adds / page_views)), 2) AS avg_view_to_cart_add
+FROM
+  product_info;
+```
+|avg\_view\_to\_cart\_add|
+|------------------------|
+|60.95                   |
+
+#### Q5. What is the average conversion rate from cart add to purchase?
+```sql
+SELECT
+  ROUND(AVG((100 * purchases / cart_adds)), 2) AS avg_cart_adds_to_purchases
+FROM
+  product_info;
+```
+|avg\_cart\_adds\_to\_purchases|
+|------------------------------|
+|75.93                         |
+
+### Part D. Campaigns Analysis
+
+#### Generate a table that has 1 single row for every unique visit_id record and has the following columns:
+* user_id
+* visit_id
+* visit_start_time: the earliest event_time for each visit
+* page_views: count of page views for each visit
+* cart_adds: count of product cart add events for each visit
+* purchase: 1/0 flag if a purchase event exists for each visit
+* campaign_name: map the visit to a campaign if the visit_start_time falls between the start_date and end_date
+* impression: count of ad impressions for each visit
+* click: count of ad clicks for each visit
+* cart_products: a comma separated text value with products added to the cart sorted by the order they were added to the cart
+
+```sql
+SELECT
+  u.user_id,
+  e.visit_id,
+  MIN(e.event_time) AS visit_start_time,
+  SUM(
+    CASE
+      WHEN e.event_type = 1 THEN 1
+      ELSE 0
+    END
+  ) AS page_views,
+  SUM(
+    CASE
+      WHEN e.event_type = 2 THEN 1
+      ELSE 0
+    END
+  ) AS cart_adds,
+  SUM(
+    CASE
+      WHEN e.event_type = 3 THEN 1
+      ELSE 0
+    END
+  ) AS purchase,
+  c.campaign_name,
+  MAX(
+    CASE
+      WHEN e.event_type = 4 THEN 1
+      ELSE 0
+    END
+  ) AS impression,
+  MAX(
+    CASE
+      WHEN e.event_type = 5 THEN 1
+      ELSE 0
+    END
+  ) AS click,
+  STRING_AGG(
+    CASE
+      WHEN p.product_id IS NOT NULL
+      AND event_type = 2 THEN p.page_name
+      ELSE NULL
+    END,
+    ', '
+    ORDER BY
+      e.sequence_number
+  ) AS cart_products
+FROM
+  clique_bait.events e
+  INNER JOIN clique_bait.users u ON e.cookie_id = u.cookie_id
+  LEFT JOIN clique_bait.campaign_identifier c ON e.event_time BETWEEN c.start_date
+  AND c.end_date
+  LEFT JOIN clique_bait.page_hierarchy p ON e.page_id = p.page_id
+GROUP BY
+  u.user_id,
+  e.visit_id,
+  c.campaign_name
+LIMIT
+  5;
+```
+|**user\_id**|**visit\_id**|**visit\_start\_time** |**page\_views**|**cart\_adds**|**purchase**|**campaign\_name**               |**impression**|**click**|**cart\_products**                                            |
+|------------|-------------|-----------------------|---------------|--------------|------------|---------------------------------|--------------|---------|--------------------------------------------------------------|
+|**1**       |02a5d5       |2020-02-26 16:57:26.261|4              |0             |0           |Half Off - Treat Your Shellf(ish)|0             |0        |                                                              |
+|**1**       |0826dc       |2020-02-26 05:58:37.919|1              |0             |0           |Half Off - Treat Your Shellf(ish)|0             |0        |                                                              |
+|**1**       |0fc437       |2020-02-04 17:49:49.603|10             |6             |1           |Half Off - Treat Your Shellf(ish)|1             |1        |Tuna, Russian Caviar, Black Truffle, Abalone, Crab, Oyster    |
+|**1**       |30b94d       |2020-03-15 13:12:54.024|9              |7             |1           |Half Off - Treat Your Shellf(ish)|1             |1        |Salmon, Kingfish, Tuna, Russian Caviar, Abalone, Lobster, Crab|
+|**1**       |41355d       |2020-03-25 00:11:17.861|6              |1             |0           |Half Off - Treat Your Shellf(ish)|0             |0        |Lobster                                                       |
